@@ -1,14 +1,3 @@
-variable "company_code" {
-  description = "Three-letter company code/abbreviation. If not provided, will be empty."
-  type        = string
-  default     = ""
-  
-  validation {
-    condition     = var.company_code == "" || (length(var.company_code) == 3 && can(regex("^[a-zA-Z]+$", var.company_code)))
-    error_message = "Company code must be either empty or exactly 3 alphabetic characters."
-  }
-}
-
 variable "instance_number" {
   description = "Instance number for resource naming (1-999)"
   type        = number
@@ -37,9 +26,9 @@ variable "location" {
 
 variable "hostvmsize" {
   description = "Size of the Host Virtual Machine"
-  default     = "Standard_D4s_v3"
+  default     = "Standard_E32as_v5"
   validation {
-    condition     = contains(["Standard_D2_v3", "Standard_D4_v3", "Standard_D8_v3", "Standard_D16_v3", "Standard_D32_v3", "Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3", "Standard_D16s_v3", "Standard_D32s_v3", "Standard_D64_v3", "Standard_E2_v3", "Standard_E4_v3", "Standard_E8_v3", "Standard_E16_v3", "Standard_E32_v3", "Standard_E64_v3", "Standard_D64s_v3", "Standard_E2s_v3", "Standard_E4s_v3", "Standard_E8s_v3", "Standard_E16s_v3", "Standard_E32s_v3", "Standard_E64s_v3"], var.hostvmsize)
+    condition     = contains(["Standard_E32as_v5"], var.hostvmsize)
     error_message = "Invalid VM size selected"
   }
 }

@@ -1,5 +1,5 @@
 locals {
-  prefix = "crgar-migr"
+  prefix = "crgar-mig"
   
   vnet_name      = "${local.prefix}-vnet"
   address_spaces = ["172.100.0.0/17"]       

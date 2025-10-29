@@ -1,4 +1,4 @@
-Start-Transcript -Path "setup-logs.txt" -Append
+Start-Transcript -Path "setup-logs-$(Get-Date -Format yyyy-MM-dd-HH-mm-ss).txt" -Append
 Write-Host "-----------------------------------------------------------------------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Beginning the deployment process..." -ForegroundColor Yellow
 Write-Host "This script will deploy the Contoso Hotel application to the specified VMs." -ForegroundColor Yellow
@@ -9,6 +9,14 @@ Install-Module -Name SqlServer -Confirm:$False -Force
 Install-Module -Name SqlServerDsc -Confirm:$False -Force
 Get-Module SqlServer -ListAvailable
 Write-Host "Done Installing SQL Server Module" -ForegroundColor Green
+
+Write-Host "Importing SqlServer module..." -ForegroundColor Yellow
+Import-Module SqlServer -Force -DisableNameChecking -ErrorAction SilentlyContinue
+Write-Host "SqlServer module imported successfully." -ForegroundColor Green
+
+Write-Host "Importing SqlServerDsc module..." -ForegroundColor Yellow
+Import-Module SqlServerDsc -Force -DisableNameChecking -ErrorAction SilentlyContinue
+Write-Host "SqlServerDsc module imported successfully." -ForegroundColor Green
 
 # Variables
 $VmAdminPassword = "demo!pass123"
@@ -165,7 +173,6 @@ $jobVariables = @{
     baseVHDs                 = $baseVHDs
     vmConfigs                = $vmConfigs
 }
-
 
 # Ensure script runs as Administrator
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -1097,8 +1104,8 @@ function Configure-OtherVM {
             return
         }
         
-        $VMPath = "F:\Hyper-V\Virtual Machines"
-        $VHDPath = "F:\Hyper-V\Virtual Hard Disks\$vmName.vhdx"
+        $VMPath = "E:\Hyper-V\Virtual Machines"
+        $VHDPath = "E:\Hyper-V\Virtual Hard Disks\$vmName.vhdx"
         $VHDSize = 40GB
         $MemoryStartupBytes = 4GB
         
@@ -1176,18 +1183,18 @@ Write-Host "=======================================" -ForegroundColor Cyan
 foreach ($baseVHD in $baseVHDs.GetEnumerator()) {
     $vhdFileName = $baseVHD.Key
     $sysprepedVHDUrl = $baseVHD.Value
-    $destinationVHDPath = "D:\Hyper-V\vhd"
+    $destinationVHDPath = "E:\Hyper-V\vhd"
     $fullVHDPath = Join-Path -Path $destinationVHDPath -ChildPath $vhdFileName
-    
+
     if ($vm.SetId -eq "ubuntu") {
         Write-Host "Skipping readiness check for Ubuntu VM: $($vm.Name)" -ForegroundColor Yellow
         continue
     }
-    
+
     Check-VHD -DestinationVHDPath $destinationVHDPath -VHDFileName $vhdFileName -SysprepedVHDUrl $sysprepedVHDUrl
-            
+
     # Copy the syspreped VHD to the final drive
-    $finalVHDPath = "F:\BaseVHD\"
+    $finalVHDPath = "E:\BaseVHD\"
     Check-DirectoryExistance -Path $finalVHDPath
     Copy-Item -Path $fullVHDPath -Destination $finalVHDPath -Force -Verbose
 } 
@@ -1197,25 +1204,25 @@ $vmCreationJobs = @()
 
 foreach ($config in $vmConfigs) {
     $baseVHD = $config.BaseVHD
-    
+
     if ($baseVHD -eq "ubuntu_installation.iso") {
         Write-Host "Skipping $baseVHD as it handled in a different way." -ForegroundColor Cyan
         continue
     }
-    
-    $finalVHD = Join-Path -Path "F:\BaseVHD\" -ChildPath $baseVHD
-            
+
+    $finalVHD = Join-Path -Path "E:\BaseVHD\" -ChildPath $baseVHD
+  
     foreach ($vm in $config.VMs) {
         $vmName = $vm.Name
-        $vmPath = "F:\Hyper-V\$vmName"
-        $vhdPath = "F:\Hyper-V\Virtual Hard Disks\$vmName\$vmName.vhd"
+        $vmPath = "E:\Hyper-V\$vmName"
+        $vhdPath = "E:\Hyper-V\Virtual Hard Disks\$vmName\$vmName.vhd"
         $ipAddress = $vm.IPAddress
 
         if ($vm.SetId -eq "ubuntu") {
            Write-Host "Skipping readiness check for Ubuntu VM: $($vm.Name)" -ForegroundColor Yellow
            continue
         }
-        
+
         $vmCreationJobs += Start-Job -ScriptBlock {
             param($vmName, $vmPath, $vhdPath, $finalVHD, $ipAddress, $credential)
             

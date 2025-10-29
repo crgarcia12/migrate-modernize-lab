@@ -124,7 +124,7 @@ resource "azurerm_windows_virtual_machine" "hypervvm" {
   location              = azurerm_resource_group.rg.location
   resource_group_name   = azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.hypervnicprimary.id, azurerm_network_interface.hypervnicsecondary.id]
-  size                  = "Standard_E16_v3"
+  size                  = var.hostvmsize
   admin_username        = "adminuser"
   admin_password        = var.vmpassword
 
@@ -137,9 +137,12 @@ resource "azurerm_windows_virtual_machine" "hypervvm" {
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    sku       = "2022-datacenter"
+    sku       = "2022-datacenter-g2"
     version   = "latest"
   }
+
+  secure_boot_enabled = true
+  vtpm_enabled        = true
 
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.diagstorage.primary_blob_endpoint
