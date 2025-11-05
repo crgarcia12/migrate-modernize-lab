@@ -4,18 +4,10 @@
   "metadata": {
   },
   "parameters": {
-    "artifactsLocation": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/crgarcia12/azure-migrate-env/main/",
-      "metadata": {
-        "description": "The base URI where artifacts required by this template are located including a trailing /"
-      }
-    },
-
     "prefix": {
       "type": "string",
-      "defaultValue": "lab@lab.LabInstance.ID",
-      //"defaultValue": "crgmig",
+      //"defaultValue": "lab@lab.LabInstance.ID",
+      "defaultValue": "crgmig",
       "metadata": {
         "description": "Resource name prefix"
       }
@@ -1288,7 +1280,7 @@
             "value": "[format('{0}-prj', parameters('prefix'))]"
           },
           "applianceName": {
-            "value": "offlinecollector"
+            "value": "[format('{0}-offlinecollector', parameters('prefix'))]"
           },
           "migrateProjectName": {
             "value": "[format('{0}-azm', parameters('prefix'))]"

@@ -1,3 +1,13 @@
+$environmentName = "migv8"
+
+az group create -n ${environmentName}-rg -l swedencentral
+az group deployment create -n ${environmentName} `
+    -g ${environmentName}-rg `
+    --template-file '.\templates\lab197959-template2 (v5).json' `
+    --parameters prefix=${environmentName} `
+    --debug
+
+
 # Option 1: Using Azure PowerShell module (for pipeline with service principal)
 # Assumes Connect-AzAccount was already done in pipeline
 $secureToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com/").Token
@@ -22,8 +32,8 @@ $headers.Add("content-type", "application/json")
 #     -Body '{   "tool": "ServerAssessment" }'
 
 $subscriptionId = "96c2852b-cf88-4a55-9ceb-d632d25b83a4"
-$resourceGroup = "tmp4"
-$masterSiteName = "crgmig-prjmastersite"
+$resourceGroup = "$environmentName-rg"
+$masterSiteName = "$environmentName-prjmastersite"
 $apiVersionOffAzure = "2024-12-01-preview"
 $remoteZipFilePath = "https://github.com/crgarcia12/migrate-modernize-lab/raw/refs/heads/main/lab-material/Azure-Migrate-Discovery.zip"
 $localZipFilePath = "importArtifacts.zip"
