@@ -1,4 +1,4 @@
-$environmentName = "mig17"
+$environmentName = "mig19"
 
 $subscriptionId = (Get-AzContext).Subscription.Id
 $resourceGroup = "$environmentName-rg"
@@ -7,8 +7,9 @@ $migrateProjectName = "${environmentName}-azm"
 
 $apiVersionOffAzure = "2024-12-01-preview"
 
-$remoteZipFilePath = "https://github.com/crgarcia12/migrate-modernize-lab/raw/refs/heads/main/lab-material/Azure-Migrate-Discovery-light.zip"
+$remoteZipFilePath = "https://github.com/crgarcia12/migrate-modernize-lab/raw/refs/heads/main/lab-material/Azure-Migrate-Discovery.zip"
 $localZipFilePath = Join-Path (Get-Location) "importArtifacts.zip"
+Invoke-WebRequest $remoteZipFilePath -OutFile $localZipFilePath
 
 # Create resource group and deploy ARM template
 New-AzResourceGroup -Name "${environmentName}-rg" -Location "swedencentral"
@@ -43,7 +44,7 @@ $response = Invoke-RestMethod -Uri $registerToolApi `
     -Body '{   "tool": "ServerAssessment" }'
 
 
-Invoke-WebRequest $remoteZipFilePath -OutFile $localZipFilePath
+
 
 # Upload the ZIP file to OffAzure and start import
 $importUriUrl = "https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.OffAzure/masterSites/${masterSiteName}/Import?api-version=${apiVersionOffAzure}"
