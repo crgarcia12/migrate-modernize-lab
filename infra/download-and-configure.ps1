@@ -5,7 +5,7 @@
 # Configuration
 $ScriptUrl = "https://github.com/crgarcia12/migrate-modernize-lab/raw/refs/heads/main/infra/configure-azm.ps1"
 $TempPath = $env:TEMP
-$ScriptVersion = "6.0.0"
+$ScriptVersion = "8.0.0"
 
 # Script-level variable to track if logging has been initialized
 $script:LoggingInitialized = $false
@@ -32,7 +32,7 @@ function Write-LogToBlob {
         Initialize-LogBlob -StorageAccountName $STORAGE_ACCOUNT_NAME -SasToken $STORAGE_SAS_TOKEN -ContainerName $CONTAINER_NAME -EnvironmentName $environmentName
     }
     
-    $LOG_BLOB_NAME = "$environmentName.log.txt"
+    $LOG_BLOB_NAME = "$environmentName.download.txt"
     
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logEntry = "[$timestamp] [$Level] $Message"
@@ -187,6 +187,8 @@ try {
             # Always use PowerShell with bypass to ensure execution in non-interactive mode
             Write-LogToBlob "Using execution policy bypass to ensure script runs..."
             . $TempScriptPath
+
+            
             # & pwsh -ExecutionPolicy Bypass -File $TempScriptPath
             Write-LogToBlob "Downloaded script execution completed!"
         }

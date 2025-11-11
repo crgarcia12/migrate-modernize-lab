@@ -6,7 +6,7 @@
 
 $SkillableEnvironment = $true
 $EnvironmentName = "" # Set your environment name here for non-Skillable environments
-$ScriptVersion = "7.0.0"
+$ScriptVersion = "8.0.0"
 
 ######################################################
 ##############   INFRASTRUCTURE FUNCTIONS   #########
@@ -155,12 +155,10 @@ function Write-BufferToBlob {
     $STORAGE_SAS_TOKEN = "?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-01-30T22:09:19Z&st=2025-11-05T13:54:19Z&spr=https&sig=mBoL3bVHPGSniTeFzXZ5QdItTxaFYOrhXIOzzM2jvF0%3D"
     $STORAGE_ACCOUNT_NAME = "azmdeploymentlogs"
     $CONTAINER_NAME = "logs"
-    $LOG_BLOB_NAME = "$environmentName.log.txt"
+    $LOG_BLOB_NAME = "$environmentName.lab.txt"
     
     # Auto-initialize logging if not already done
     if (-not $script:LoggingInitialized) {
-        
-
         try {
             # Initialize script-level storage context
             $script:StorageContext = New-AzStorageContext -StorageAccountName $STORAGE_ACCOUNT_NAME -SasToken $STORAGE_SAS_TOKEN
@@ -685,10 +683,10 @@ function New-VMAssessment {
     try {
         $assessmentName = "vm-assessment"
         $headers = Get-AuthenticationHeaders
-        
+        $apiVersion = "2025-09-09-preview"
         $assessmentBody = @{
             "type" = "Microsoft.Migrate/assessmentprojects/assessments"
-            "apiVersion" = "2024-03-03-preview"
+            "apiVersion" = $apiVersion
             "name" = "$AssessmentProjectName/$assessmentName"
             "location" = $Location
             "tags" = @{}
@@ -735,7 +733,7 @@ migrateresources
             }
         } | ConvertTo-Json -Depth 10
 
-        $assessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Migrate/assessmentProjects/$AssessmentProjectName/assessments/${assessmentName}?api-version=2024-03-03-preview"
+        $assessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Migrate/assessmentProjects/$AssessmentProjectName/assessments/${assessmentName}?api-version=$apiVersion"
         
         Write-LogToBlob "Assessment URI: $assessmentUri"
         Write-LogToBlob "Assessment Body: $assessmentBody"
@@ -779,9 +777,8 @@ function New-SqlAssessment {
     try {
         $Headers = Get-AuthenticationHeaders
         
-        # Generate random suffix for assessment name
         $assessmentName = "sql-assessment"
-        $apiVersion = "2024-03-03-preview"
+        $apiVersion = "2025-09-09-preview"
         
         $assessmentBody = @{
             "type" = "Microsoft.Migrate/assessmentprojects/assessments"
@@ -901,10 +898,7 @@ function New-BusinessCaseOptimizeForPaas {
     
     try {
         $Headers = Get-AuthenticationHeaders
-        
-        # Generate random suffix for business case name
-        $randomSuffix = -join ((65..90) + (97..122) | Get-Random -Count 3 | ForEach-Object {[char]$_})
-        $businessCaseName = "buizzcase$randomSuffix"
+        $businessCaseName = "businesscase-for-paas"
         $businessCaseApiVersion = "2025-09-09-preview"
         
         $businessCaseBody = @{
@@ -977,10 +971,7 @@ function New-BusinessCaseIaasOnly {
     
     try {
         $Headers = Get-AuthenticationHeaders
-        
-        # Generate random suffix for business case name
-        $randomSuffix = -join ((65..90) + (97..122) | Get-Random -Count 3 | ForEach-Object {[char]$_})
-        $businessCaseName = "buizzcase$randomSuffix"
+        $businessCaseName = "businesscase-for-iaas"
         $businessCaseApiVersion = "2025-09-09-preview"
         
         $businessCaseBody = @{
@@ -1052,10 +1043,8 @@ function New-GlobalAssessment {
     try {
         $Headers = Get-AuthenticationHeaders
         
-        # Generate random suffix for global assessment name
-        $heteroAssessmentRandomSuffix = -join ((65..90) + (97..122) | Get-Random -Count 3 | ForEach-Object {[char]$_})
-        $heteroAssessmentName = "default-all-workloads$heteroAssessmentRandomSuffix"
-        $heteroApiVersion = "2024-03-03-preview"
+        $heteroAssessmentName = "full-assessment"
+        $heteroApiVersion = "2025-09-09-preview"
         
         $heteroAssessmentBody = @{
             "type" = "Microsoft.Migrate/assessmentProjects/heterogeneousAssessments"
