@@ -1095,7 +1095,7 @@ function Invoke-AzureMigrateConfiguration {
     
     # Environment name and prefix for all azure resources
     if ($SkillableEnvironment) {
-        $environmentName = "lab<LABINSTANCEID>"
+        $environmentName = "<LABINSTANCEID>"
     }
     else {
         $environmentName = $EnvironmentName
