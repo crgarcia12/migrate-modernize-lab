@@ -226,9 +226,10 @@ We will now provide Hyper-V host credentials. The appliance will use these crede
     ![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/00946.png)
 
 
-1. [ ] click in **Add discovery source** and add the IP address of the Hyper-V host: +++ +++
+1. [ ] click in **Add discovery source** and add the IP address of the Hyper-V host: +++172.100.2.1+++
 
-    ![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/00946.png)
+    ![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/00947.png)
+    ![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/00948.png)
 
 
 ===
@@ -425,6 +426,3 @@ Lets now find out if we can host it in a modern PaaS service
        Notice that the report can be exported and shared with other developers in the top right corner
 4. Now, let's run the Mandatory Issue: Windows Authenticatio. Click in `Run Task`
 > !IMAGE[0080.png](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/0080.png)
-
-
-
