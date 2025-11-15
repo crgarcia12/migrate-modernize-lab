@@ -6,7 +6,7 @@
 
 $SkillableEnvironment = $true
 $EnvironmentName = "crgmig5" # Set your environment name here for non-Skillable environments
-$ScriptVersion = "13.0.0"
+$ScriptVersion = "14.0.0"
 
 ######################################################
 ##############   INFRASTRUCTURE FUNCTIONS   #########
@@ -68,8 +68,6 @@ function Invoke-RestMethodWithRetry {
     while ($attempt -lt $maxAttempts) {
         $attempt++
         try {
-            # Log basic attempt info
-            Write-LogToBlob "API Call attempt $attempt of $maxAttempts"
             
             # Log detailed info only if LogDetails is true OR this is a retry attempt (attempt > 1)
             if ($LogDetails -or $attempt -gt 1) {
@@ -92,9 +90,6 @@ function Invoke-RestMethodWithRetry {
             
             $response = Invoke-RestMethod @params
             
-            # Log successful response
-            Write-LogToBlob "API Call successful on attempt $attempt"
-            
             # Log response details only if LogDetails is true OR this is a retry attempt (attempt > 1)
             if ($LogDetails -or $attempt -gt 1) {
                 Write-LogToBlob "REST API Call Response: $($response | ConvertTo-Json -Depth 10)"
@@ -103,8 +98,12 @@ function Invoke-RestMethodWithRetry {
             return $response
         }
         catch {
-            Write-LogToBlob "API Call attempt $attempt failed: $($_.Exception.Message)" "WARN"
-            
+            Write-LogToBlob "-------------------------------"
+            Write-LogToBlob "----API Call attempt $attempt failed. URI: $($params.Uri)" "WARN"
+            Write-LogToBlob "----Request Body: $($params.Body)" "WARN"
+            Write-LogToBlob "----Exception: $($_.Exception.Message)" "WARN"
+            Write-LogToBlob "-------------------------------"
+
             if ($attempt -lt $maxAttempts) {
                 Write-LogToBlob "Retrying in $DelaySeconds seconds..." "WARN"
                 Start-Sleep -Seconds $DelaySeconds
