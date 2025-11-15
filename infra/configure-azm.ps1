@@ -6,7 +6,7 @@
 
 $SkillableEnvironment = $true
 $EnvironmentName = "crgmig5" # Set your environment name here for non-Skillable environments
-$ScriptVersion = "12.0.0"
+$ScriptVersion = "13.0.0"
 
 ######################################################
 ##############   INFRASTRUCTURE FUNCTIONS   #########
@@ -58,14 +58,9 @@ function Invoke-RestMethodWithRetry {
         [string]$Body = $null,
         [string]$ContentType = "application/json",
         [int]$MaxRetries = 1,
-        [int]$DelaySeconds = 5
+        [int]$DelaySeconds = 5,
+        [bool]$LogDetails = $false
     )
-    
-    # Log the request details
-    Write-LogToBlob "REST API Call [$Method]: $Uri"
-    if ($Body) {
-        Write-LogToBlob "$Body"
-    }
     
     $attempt = 0
     $maxAttempts = $MaxRetries + 1
@@ -73,7 +68,16 @@ function Invoke-RestMethodWithRetry {
     while ($attempt -lt $maxAttempts) {
         $attempt++
         try {
-            Write-LogToBlob "API Call attempt $attempt of $maxAttempts to: $Uri"
+            # Log basic attempt info
+            Write-LogToBlob "API Call attempt $attempt of $maxAttempts"
+            
+            # Log detailed info only if LogDetails is true OR this is a retry attempt (attempt > 1)
+            if ($LogDetails -or $attempt -gt 1) {
+                Write-LogToBlob "REST API Call [$Method]: $Uri"
+                if ($Body) {
+                    Write-LogToBlob "REST API Call Body: $Body"
+                }
+            }
             
             $params = @{
                 Uri = $Uri
@@ -90,7 +94,11 @@ function Invoke-RestMethodWithRetry {
             
             # Log successful response
             Write-LogToBlob "API Call successful on attempt $attempt"
-            Write-LogToBlob "REST API Call - Response: $($response | ConvertTo-Json -Depth 10)"
+            
+            # Log response details only if LogDetails is true OR this is a retry attempt (attempt > 1)
+            if ($LogDetails -or $attempt -gt 1) {
+                Write-LogToBlob "REST API Call Response: $($response | ConvertTo-Json -Depth 10)"
+            }
             
             return $response
         }
@@ -1089,6 +1097,58 @@ migrateresources
     }
 }
 
+
+function New-GlobalAssessment {
+    param(
+        [string]$SubscriptionId,
+        [string]$ResourceGroupName,
+        [string]$AssessmentProjectName,
+        [string]$Location,
+        [string]$VmAssessmentId,
+        [string]$SqlAssessmentId
+    )
+    
+    Write-LogToBlob "Creating Global Assessment"
+    
+    try {
+        $Headers = Get-AuthenticationHeaders
+        
+        $heteroAssessmentName = "full-assessment"
+        $heteroApiVersion = "2025-09-09-preview"
+        
+        $heteroAssessmentBody = @{
+            "type" = "Microsoft.Migrate/assessmentProjects/heterogeneousAssessments"
+            "apiVersion" = "$heteroApiVersion"
+            "name" = "$AssessmentProjectName/$heteroAssessmentName"
+            "location" = $Location
+            "tags" = @{}
+            "kind" = "Migrate"
+            "properties" = @{
+                "assessmentArmIds" = @(
+                    $VmAssessmentId,
+                    $SqlAssessmentId
+                )
+            }
+        } | ConvertTo-Json -Depth 10
+
+        $heteroAssessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Migrate/assessmentprojects/$AssessmentProjectName/heterogeneousAssessments/${heteroAssessmentName}?api-version=$heteroApiVersion"
+        
+        Invoke-RestMethodWithRetry -Uri $heteroAssessmentUri `
+            -Method PUT `
+            -Headers $Headers `
+            -Body $heteroAssessmentBody `
+            -LogDetails $true | Out-Null
+
+        Write-LogToBlob "Global Assessment created successfully"
+        
+        return $heteroAssessmentName
+    }
+    catch {
+        Write-LogToBlob "Failed to create Global Assessment: $($_.Exception.Message)" "ERROR"
+        throw
+    }
+}
+
 ######################################################
 ##############   BUSINESS CASE FUNCTIONS   ##########
 ######################################################
@@ -1149,7 +1209,8 @@ migrateresources
         Invoke-RestMethodWithRetry -Uri $businessCaseUri `
             -Method PUT `
             -Headers $Headers `
-            -Body $businessCaseBody | Out-Null
+            -Body $businessCaseBody `
+            -LogDetails $true | Out-Null
 
         Write-LogToBlob "OptimizeForPaas Business Case created successfully"
         
@@ -1217,7 +1278,8 @@ migrateresources
         Invoke-RestMethodWithRetry -Uri $businessCaseUri `
             -Method PUT `
             -Headers $Headers `
-            -Body $businessCaseBody | Out-Null
+            -Body $businessCaseBody `
+            -LogDetails $true | Out-Null
 
         Write-LogToBlob "IaaSOnly Business Case created successfully"
         
@@ -1225,56 +1287,6 @@ migrateresources
     }
     catch {
         Write-LogToBlob "Failed to create IaaSOnly Business Case: $($_.Exception.Message)" "ERROR"
-        throw
-    }
-}
-
-function New-GlobalAssessment {
-    param(
-        [string]$SubscriptionId,
-        [string]$ResourceGroupName,
-        [string]$AssessmentProjectName,
-        [string]$Location,
-        [string]$VmAssessmentId,
-        [string]$SqlAssessmentId
-    )
-    
-    Write-LogToBlob "Creating Global Assessment"
-    
-    try {
-        $Headers = Get-AuthenticationHeaders
-        
-        $heteroAssessmentName = "full-assessment"
-        $heteroApiVersion = "2025-09-09-preview"
-        
-        $heteroAssessmentBody = @{
-            "type" = "Microsoft.Migrate/assessmentProjects/heterogeneousAssessments"
-            "apiVersion" = "$heteroApiVersion"
-            "name" = "$AssessmentProjectName/$heteroAssessmentName"
-            "location" = $Location
-            "tags" = @{}
-            "kind" = "Migrate"
-            "properties" = @{
-                "assessmentArmIds" = @(
-                    $VmAssessmentId,
-                    $SqlAssessmentId
-                )
-            }
-        } | ConvertTo-Json -Depth 10
-
-        $heteroAssessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Migrate/assessmentprojects/$AssessmentProjectName/heterogeneousAssessments/${heteroAssessmentName}?api-version=$heteroApiVersion"
-        
-        Invoke-RestMethodWithRetry -Uri $heteroAssessmentUri `
-            -Method PUT `
-            -Headers $Headers `
-            -Body $heteroAssessmentBody | Out-Null
-
-        Write-LogToBlob "Global Assessment created successfully"
-        
-        return $heteroAssessmentName
-    }
-    catch {
-        Write-LogToBlob "Failed to create Global Assessment: $($_.Exception.Message)" "ERROR"
         throw
     }
 }
