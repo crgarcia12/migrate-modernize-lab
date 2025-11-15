@@ -5,8 +5,8 @@
 ######################################################
 
 $SkillableEnvironment = $true
-$EnvironmentName = "crgmig5" # Set your environment name here for non-Skillable environments
-$ScriptVersion = "14.0.0"
+$EnvironmentName = "crgmig13" # Set your environment name here for non-Skillable environments
+$ScriptVersion = "15.0.0"
 
 ######################################################
 ##############   INFRASTRUCTURE FUNCTIONS   #########
@@ -102,6 +102,7 @@ function Invoke-RestMethodWithRetry {
             Write-LogToBlob "----API Call attempt $attempt failed. URI: $($params.Uri)" "WARN"
             Write-LogToBlob "----Request Body: $($params.Body)" "WARN"
             Write-LogToBlob "----Exception: $($_.Exception.Message)" "WARN"
+            Write-LogToBlob "----Response: $response" "WARN"
             Write-LogToBlob "-------------------------------"
 
             if ($attempt -lt $maxAttempts) {
@@ -124,7 +125,7 @@ function Get-AzureRegion {
         [bool]$IsSkillableEnvironment
     )
     
-    $defaultLocation = "southcentralus"
+    $defaultLocation = "swedencentral"
     Write-LogToBlob "Determining location for operations"
     
     # If Skillable environment, try to get location from MigrateProject
@@ -166,7 +167,7 @@ function New-AzureEnvironment {
     try {
         Write-LogToBlob "Environment location: $Location"
         
-        $templateFile = '.\templates\lab197959-template2 (v6).json'
+        $templateFile = '.\templates\lab197959-template2 (v7).json'
         
         Write-LogToBlob "Creating resource group: $ResourceGroupName"
         New-AzResourceGroup -Name $ResourceGroupName -Location $Location -Force
@@ -525,7 +526,7 @@ function Start-ArtifactImport {
             "x-ms-blob-type" = "BlockBlob"
             "x-ms-version"   = "2020-04-08"
         }
-        Invoke-RestMethodWithRetry -Uri $blobUri -Method PUT -Headers $uploadBlobHeaders -Body $fileBytes -ContentType "application/octet-stream"
+        Invoke-RestMethod -Uri $blobUri -Method PUT -Headers $uploadBlobHeaders -Body $fileBytes -ContentType "application/octet-stream"
         Write-LogToBlob "Successfully uploaded ZIP to blob"
         
         return $jobArmId

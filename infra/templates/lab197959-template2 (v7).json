@@ -6,9 +6,22 @@
     "prefix": {
       "type": "string",
       "defaultValue": "lab@lab.LabInstance.ID",
-      //"defaultValue": "crgmig",
       "metadata": {
         "description": "Resource name prefix"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    },
+    "migrateLocation": {
+      "type": "string",
+      "defaultValue": "centralus",
+      "metadata": {
+        "description": "Location for Azure Migrate resources"
       }
     }
   },
@@ -70,6 +83,9 @@
       ],
       "ghosted-nsg": [],
       "azurevms-nsg": []
+    },
+    "globalTags": {
+      "AZM-LAB": "97865AE7-D961-41EB--AZM-LAB-AA07-8501D65FC744"
     }
   },
   "resources": [
@@ -110,7 +126,7 @@
             "value": "[variables('vnetName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "addressSpaces": {
             "value": [
@@ -125,6 +141,9 @@
                 "input": "[createObject('name', variables('subnets')[copyIndex('value')].name, 'addressPrefix', variables('subnets')[copyIndex('value')].addressPrefix)]"
               }
             ]
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -147,7 +166,6 @@
             },
             "location": {
               "type": "string",
-              "defaultValue": "swedencentral",
               "metadata": {
                 "description": "The location for the virtual network"
               }
@@ -261,10 +279,13 @@
             "value": "[format('{0}-{1}', variables('vmName'), variables('subnets')[copyIndex()].nsgName)]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "securityRules": {
             "value": "[variables('nsgRules')[variables('subnets')[copyIndex()].nsgName]]"
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -376,13 +397,16 @@
             "value": "[format('{0}-ip', variables('vmName'))]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "allocationMethod": {
             "value": "Static"
           },
           "sku": {
             "value": "Standard"
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -405,7 +429,6 @@
             },
             "location": {
               "type": "string",
-              "defaultValue": "swedencentral",
               "metadata": {
                 "description": "The location for the public IP address"
               }
@@ -486,13 +509,16 @@
             "value": "[replace(format('{0}-diag', parameters('prefix')), '-', '')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "skuName": {
             "value": "Standard_LRS"
           },
           "kind": {
             "value": "StorageV2"
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -602,7 +628,7 @@
             "value": "[format('udr-{0}-azurevms', variables('vnetName'))]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "routes": {
             "value": [
@@ -613,6 +639,9 @@
                 "nextHopIpAddress": "172.100.1.4"
               }
             ]
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -714,7 +743,7 @@
             "value": "[format('{0}-nic-primary', variables('vmName'))]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "subnetId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy-vnet'), '2022-09-01').outputs.subnets.value[0].id]"
@@ -730,6 +759,9 @@
           },
           "enableAcceleratedNetworking": {
             "value": false
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -872,7 +904,7 @@
             "value": "[format('{0}-nic-secondary', variables('vmName'))]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "subnetId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy-vnet'), '2022-09-01').outputs.subnets.value[1].id]"
@@ -885,6 +917,9 @@
           },
           "enableAcceleratedNetworking": {
             "value": true
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -1026,7 +1061,7 @@
             "value": "[variables('vmName')]"
           },
           "location": {
-            "value": "[resourceGroup().location]"
+            "value": "[parameters('location')]"
           },
           "vmSize": {
             "value": "Standard_E32as_v5"
@@ -1055,6 +1090,9 @@
           },
           "bootDiagnosticsStorageUri": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy-storage'), '2022-09-01').outputs.primaryBlobEndpoint.value]"
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -1228,6 +1266,12 @@
         "parameters": {
           "prefix": {
             "value": "[parameters('prefix')]"
+          },
+          "migrateLocation": {
+            "value": "[parameters('migrateLocation')]"
+          },
+          "tags": {
+            "value": "[variables('globalTags')]"
           }
         },
         "template": {
@@ -1238,6 +1282,19 @@
               "type": "string",
               "metadata": {
                 "description": "Resource name prefix"
+              }
+            },
+            "migrateLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for Azure Migrate resources"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to apply to Azure Migrate resources"
               }
             }
           },
@@ -1252,8 +1309,8 @@
               "type": "Microsoft.Migrate/MigrateProjects",
               "apiVersion": "2020-06-01-preview",
               "name": "[variables('migrateProjectName')]",
-              "location": "[variables('location')]",
-              "tags": "[createObject('Migrate Project', variables('migrateProjectName'))]",
+              "location": "[parameters('migrateLocation')]",
+              "tags": "[union(parameters('tags'), createObject('Migrate Project', variables('migrateProjectName')))]",
               "properties": {}
             },
             {
@@ -1268,6 +1325,12 @@
                 "parameters": {
                   "prefix": {
                     "value": "[parameters('prefix')]"
+                  },
+                  "migrateLocation": {
+                    "value": "[parameters('migrateLocation')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
                   }
                 },
                 "template": {
@@ -1279,6 +1342,19 @@
                       "metadata": {
                         "description": "Resource name prefix"
                       }
+                    },
+                    "migrateLocation": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for Azure Migrate resources"
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "defaultValue": {},
+                      "metadata": {
+                        "description": "Tags to apply to the resources"
+                      }
                     }
                   },
                   "variables": {
@@ -1289,6 +1365,7 @@
                       "type": "Microsoft.Migrate/MigrateProjects/Solutions",
                       "apiVersion": "2020-06-01-preview",
                       "name": "[format('{0}/{1}', variables('migrateProjectName'), 'Servers-Assessment-ServerAssessment')]",
+                      "tags": "[parameters('tags')]",
                       "properties": {
                         "tool": "ServerAssessment",
                         "purpose": "Assessment",
@@ -1301,6 +1378,7 @@
                       "type": "Microsoft.Migrate/MigrateProjects/Solutions",
                       "apiVersion": "2020-06-01-preview",
                       "name": "[format('{0}/{1}', variables('migrateProjectName'), 'Servers-Discovery-ServerDiscovery')]",
+                      "tags": "[parameters('tags')]",
                       "properties": {
                         "tool": "ServerDiscovery",
                         "purpose": "Discovery",
@@ -1316,6 +1394,7 @@
                       "type": "Microsoft.Migrate/MigrateProjects/Solutions",
                       "apiVersion": "2020-06-01-preview",
                       "name": "[format('{0}/{1}', variables('migrateProjectName'), 'Servers-Migration-ServerMigration')]",
+                      "tags": "[parameters('tags')]",
                       "properties": {
                         "tool": "ServerMigration",
                         "purpose": "Migration",
@@ -1331,6 +1410,7 @@
                       "type": "Microsoft.Migrate/MigrateProjects/Solutions",
                       "apiVersion": "2020-06-01-preview",
                       "name": "[format('{0}/{1}', variables('migrateProjectName'), 'Servers-Migration-ServerMigration_DataReplication')]",
+                      "tags": "[parameters('tags')]",
                       "properties": {
                         "tool": "ServerMigration_DataReplication",
                         "purpose": "Migration",
@@ -1380,11 +1460,17 @@
                   "prefix": {
                     "value": "[parameters('prefix')]"
                   },
+                  "migrateLocation": {
+                    "value": "[parameters('migrateLocation')]"
+                  },
                   "serverAssessmentSolutionId": {
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy-migrate-solutions'), '2022-09-01').outputs.serverAssessmentSolutionId.value]"
                   },
                   "serverDiscoverySolutionId": {
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy-migrate-solutions'), '2022-09-01').outputs.serverDiscoverySolutionId.value]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
                   }
                 },
                 "template": {
@@ -1404,6 +1490,12 @@
                         "description": "Resource name prefix"
                       }
                     },
+                    "migrateLocation": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for Azure Migrate resources"
+                      }
+                    },
                     "serverAssessmentSolutionId": {
                       "type": "string",
                       "metadata": {
@@ -1415,10 +1507,17 @@
                       "metadata": {
                         "description": "Server Discovery Solution ID"
                       }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "defaultValue": {},
+                      "metadata": {
+                        "description": "Tags to apply to the resources"
+                      }
                     }
                   },
                   "variables": {
-                    "location": "[resourceGroup().location]",
+                    "location": "[parameters('migrateLocation')]",
                     "projectName": "[parameters('prefix')]",
                     "migrateProjectName": "[format('{0}-azm', parameters('prefix'))]",
                     "applianceName": "[format('{0}collector', parameters('prefix'))]",
@@ -1436,9 +1535,7 @@
                       "apiVersion": "2020-07-10",
                       "name": "[variables('vmwareSiteName')]",
                       "location": "[variables('location')]",
-                      "tags": {
-                        "Migrate Project": "[variables('projectName')]"
-                      },
+                      "tags": "[union(parameters('tags'), createObject('Migrate Project', variables('projectName')))]",
                       "kind": "Migrate",
                       "properties": {
                         "applianceName": "[variables('applianceName')]",
@@ -1457,9 +1554,7 @@
                       "apiVersion": "2020-05-01-preview",
                       "name": "[variables('assessmentProjectName')]",
                       "location": "[variables('location')]",
-                      "tags": {
-                        "Migrate Project": "[variables('projectName')]"
-                      },
+                      "tags": "[union(parameters('tags'), createObject('Migrate Project', variables('projectName')))]",
                       "kind": "Migrate",
                       "properties": {
                         "projectStatus": "Active",
@@ -1479,9 +1574,7 @@
                         "[resourceId('Microsoft.OffAzure/VMwareSites', variables('vmwareSiteName'))]",
                         "[resourceId('Microsoft.Migrate/assessmentprojects', variables('assessmentProjectName'))]"
                       ],
-                      "tags": {
-                        "Migrate Project": "[variables('projectName')]"
-                      },
+                      "tags": "[union(parameters('tags'), createObject('Migrate Project', variables('projectName')))]",
                       "kind": "Migrate",
                       "properties": {
                         "agentProperties": {
