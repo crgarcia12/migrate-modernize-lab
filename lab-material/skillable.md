@@ -295,9 +295,134 @@ Since we don't have all this time now, we have prepared another Azure Migrate pr
 
 # Exercise 2: Analyze migration data and build a business case
 
-TODO: In this exercise we will review the process of analyzing the collected data and make some conclusions
+Once we have the appliance running in all our Hyper-V, VMWare or phisical servers, all the data is collected and agregated continuously
+Now is time to take a closer look and decide what is going to be our next step.
+
+1. [ ] Go to the Azure Portal, and open the already prepared project: ++lab@lab.LabInstance.Id-azm++
+
+![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/0095.png)
+
+
 
 ===
+# Prepare your data
+
+To be able to take a good informed decision, we need clean accurate data.
+The appliance will try to collect data from all servers, but there can be problems.
+The first step is to look for problems and issues that require our attention.
+
+1. [ ] Open the Azure Migrate project overview
+1. [ ] Open the Action center blade from the pannel in the left.
+
+You will find several issues, like VMs that are turned off or VMs that the appliance could not connect to due to worng credentials
+
+In a real world scenario, we should try to fix all the issues at this stage to improve our data accuracy.
+For the purpose of this excersise we will move on
+
+===
+# Create Applications
+
+Once the workload data is clean, we will group the VMs into applications to be able to identify what should be moved together.
+We will do this excersise for Contoso University applciation
+
+1. [ ] Expand the Explore appliacions group in the left pannel
+2. [ ] Open the Applications page
+3. [ ] Click in Define application -> New application
+4. [ ] In Name, enter +++ContosoUniversity+++
+5. [ ] In Type, select **Custom**, meaning we have the source code
+6. [ ] In Workloads, Find all the +++ContosoUniversity+++ workloads by using the filter nad select them all
+    
+    > [+Hint] Hint
+    >
+	>![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/01002.png)
+7. [ ] In Properties, select any criticality and complexity, and createthe application
+
+
+===
+# Build a Business Case
+We now have data of all VMs, and we have group them into Applications. Time to create a business case.
+
+The Business case helps you understand where Azure can bring the most value to your organization by estimating total cost of ownership (TCO), potential savings, and sustainability impact for your applications and workloads.
+
+1. [ ] In the** Decide and plan** tab, open **Business cases**
+       You will notice that there are business cases already created, omit that for now
+2. [ ] Click in **Build business case**
+
+You can create two types of business case. You can either create a business case for all your workloads, or if you know what aplications you are interested now, you can scope them.
+For this example, we will do the second and create a business case only for the Contoso University application we just created.
+
+
+3. [ ] Type a name for the business case. For example +++Contoso University+++
+4. [ ] Select **Selected Scope**
+5. [ ] Click in **Add applications**
+6. [ ] Select **ContosoUniversity** application, then click **Next**
+7. [ ] Select **West US 2**
+8. [ ] IF your company has an special discount on Azure, you can insert it in this screen as well. Let's add a 15% discount
+9. [ ] Click **Build business case**
+
+Building the business case takes some minutes. We will not wait, we can go and grab a Business Case that is already created
+
+===
+Lets open an existent business case to analyze the results
+In this case, we will take a business case with focus in Modernization where the scope is the entire datacenter instead of only one application
+1. [ ] Expand **Decide and Plan** and open **Business cases** in the left panel
+2. [ ] Enter in there **businesscase-for-paas**
+
+The first tile will display the estimated on-premises vs cloud cost, and a pottential cost saving.
+Do you know how are on-prem costs calculated?
+1. [ ] Hoover over the i icon and learn more about this
+2. [ ] One tile bellow we can see that this business is based on 40 VMs, of which 13 are Linux
+3. [ ] We can also note that there are 22 unique webapps and 6 databases across all those servers.
+
+The Saving in case we move to Azure, would be of 212.3K USD. 
+
+Where is that saving coming from? Let's dig into that
+
+===
+
+1. [ ] Expand **Business Case Reports** and open the **Current on-premises vs future** page
+2. [ ] Scroll to the table bellow and check the **Compute and licensing** cost savings.
+3. [ ] Keep scrolling until the end of the page. In there you can also find the estimated Carbon Dioxide savings
+
+In the next page, **Migration Strategies** you can find more information on the licensing costs, the Hybrid benefits.
+Feel free to explore the business case further
+
+The last page of the Business Case is **Azure cost**. This is where you can edit all the parameters acording to your case, to get more acurate values
+
+You can also check the status of the business case you created for ContosoUniversity in case it finished calculating. If not, we can come back afterwards
+
+===
+
+# Assessment
+
+Once we understand the financial implications of moving to the cloud, we can take a look at it form a technical point of view.
+
+An Azure Migrate assessment evaluates your workloads hosted on your on-premises datacenter or other public clouds for migration to Azure. Each Azure Migrate assessment analyzes your source workloads for:
+
+**Migration strategy:** It is a strategy to migrate all the workloads that constitute an application. The strategy is aimed at efficiently migrating all the constituent workloads, which can be a combination of application servers, web apps, databases etc. to Azure.
+
+**Readiness:** Suitability of source workloads for all valid target Azure services.
+
+**Right-sized targets:** The recommended targets are right-sized based on compute and storage performance requirements to optimize for resiliency and cost.
+
+**Azure resource cost:** It is the total resource cost for hosting all the targets on Azure.
+Migration tool: It is the recommended tool for migrating the source to the recommended target.
+
+===
+
+# Assessment
+
+1. [ ] Expand **Decide and plan** and open the Assessment page
+2. [ ] Open the assessment called **businesscase-businesscase-for-paas**.<br />
+       This assessment is created automatically when you create a business case.
+3. [ ] Look at the **Recommended path**: PaaS preferred.
+4. [ ] 
+
+===
+How many Linux VMs are power off? Answer 3 + 01001.png
+How many Windows 2016 servers have we discovered? Answer 5 + 01004.png
+
+
 
 Todo:
 
@@ -381,7 +506,7 @@ question in progress
 
 ===
 
-# Excercise 3 - .NET App modernization
+# Exercise 3 - .NET App modernization
 
 Before we begin, make sure you are logged into GitHub: [https://github.com/enterprises/skillable-events](https://github.com/enterprises/skillable-events "https://github.com/enterprises/skillable-events")
 
@@ -621,4 +746,4 @@ Again you may be asked to allow certain executions of commands and changes. Allo
 
 
 ===
-# Excercise 4 - Java App modernization (julia)
+# Exercise 4 - Java App modernization (julia)
