@@ -550,7 +550,29 @@ Can you spot:
 2. [ ] The operative systems state?
 
 Click in the Workloads to take a look at the involved servers
-  
+
+Can you spot:
+1. [ ] What servers are out of support?
+2. [ ] What are in extended support?
+
+Open the database that is out of support
+
+Can you spot:
+1. [] What is the current running version?
+
+===
+
+## Contoso University
+
+The last thing we should do before migrating, is verify what other sofware is running on the VM
+
+Go back to the application, and open the win-ContosoUniversity-backedn
+
+![Screenshot](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/01010.png)
+
+Can you spot:
+1. [] Sofware count on the VM?
+1. [] Number of Web Hosting software
 
 ===
 
@@ -570,7 +592,7 @@ Click in the Workloads to take a look at the involved servers
 - Combining financial and technical analysis gives you a complete migration strategy
 
 **Next Steps:**
-You now have the foundation for informed migration decisions. In the following exercises, you'll put this knowledge into practice by modernizing actual applications using GitHub Copilot.
+You now have the foundation for informed migration decisions. In the following exercises, you'll put this knowledge into practice by modernizing Contoso University using GitHub Copilot.
 
 ===
 
