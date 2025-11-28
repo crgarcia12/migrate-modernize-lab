@@ -5,8 +5,13 @@
 ######################################################
 
 $SkillableEnvironment = $false
-$EnvironmentName = "migrate" # Set your environment name here for non-Skillable environments
 $ScriptVersion = "16.0.0"
+$EnvironmentName = "" # Globally unique! Set your environment name here
+
+if( $EnvironmentName -eq "" ) {
+    $EnvironmentName = "lab" + (Get-Date -Format "yyMMddHHmmss")
+}
+
 
 ######################################################
 ##############   INFRASTRUCTURE FUNCTIONS   #########
@@ -167,7 +172,7 @@ function New-AzureEnvironment {
     try {
         Write-LogToBlob "Environment location: $Location"
         
-        $templateFile = '.\templates\lab197959-template2 (v7).json'
+        $templateFile = '.\templates\lab197959-template2 (v6).json'
         
         Write-LogToBlob "Creating resource group: $ResourceGroupName"
         New-AzResourceGroup -Name $ResourceGroupName -Location $Location -Force
