@@ -18,10 +18,11 @@ This MicroHack provides hands-on experience with the entire migration lifecycle 
 ## Environment creation
 ```Powershell
 # Download and execute the environment creation script directly from GitHub
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/main/lab-creation/New-MicroHackEnvironment.ps1" -OutFile "$env:TEMP\New-MicroHackEnvironment.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-creation/New-MicroHackEnvironment.ps1" -OutFile "$env:TEMP\New-MicroHackEnvironment.ps1"
 & "$env:TEMP\New-MicroHackEnvironment.ps1"
 ```
 
+## Start your lab
 
 **Business Scenario:**
 You're working with an organization that has on-premises infrastructure running .NET and Java applications. Your goal is to assess the environment, build a business case for migration, and modernize applications using best practices and AI assistance.
