@@ -18,7 +18,7 @@ This MicroHack provides hands-on experience with the entire migration lifecycle 
 ## Environment creation
 ```Powershell
 # Download and execute the environment creation script directly from GitHub
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/main/infra/New-MicroHackEnvironment.ps1" -OutFile "$env:TEMP\New-MicroHackEnvironment.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/main/lab-creation/New-MicroHackEnvironment.ps1" -OutFile "$env:TEMP\New-MicroHackEnvironment.ps1"
 & "$env:TEMP\New-MicroHackEnvironment.ps1"
 ```
 

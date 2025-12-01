@@ -6,7 +6,7 @@ This folder contains infrastructure-as-code templates for deploying a comprehens
 
 To deploy the lab to Azure:
 
-1. Navigate to the `infra` folder
+1. Navigate to the `lab-creation` folder
 2. Run the deployment script:
 
 ```powershell
@@ -178,7 +178,7 @@ New-AzResourceGroupDeployment `
 #### Using the Deploy Script
 ```powershell
 # Navigate to bicep directory
-cd infra/bicep
+cd lab-creation/bicep
 
 # Run deployment script
 ./deploy.ps1 `

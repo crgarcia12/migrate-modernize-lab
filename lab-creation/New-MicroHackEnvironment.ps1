@@ -174,7 +174,7 @@ function New-AzureEnvironment {
             Write-LogToBlob "Local ARM template found: $templateFilePath"
         } else {
             Write-LogToBlob "Local ARM template not found. Downloading from GitHub..." "WARN"
-            $remoteTemplateUrl = "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/infra/templates/$templateFileName"
+            $remoteTemplateUrl = "https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-creation/templates/$templateFileName"
             $templateFilePath = Join-Path $env:TEMP $templateFileName
             
             Write-LogToBlob "Downloading template from: $remoteTemplateUrl"
