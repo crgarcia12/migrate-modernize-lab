@@ -15,7 +15,7 @@ This MicroHack provides hands-on experience with the entire migration lifecycle 
 
 ## Environment creation
 
-Make sure you have Azure PowerShell installed and authenticated to your Azure subscription.
+Install Azure PowerShell and authenticated to your Azure subscription:
 ```PowerShell
 Install-Module Az
 Connect-AzAccount
@@ -24,7 +24,7 @@ Connect-AzAccount
 Please note:
 - You need Administrator rights to install Azure PowerShell. If it's not an option for you, install it for the current user using `Install-Module Az -Scope CurrentUser`
 - It takes some time (around 10 minutes) to install. Please, complete this task in advance.
-- If you have multiple Azure subscriptions avaialble for your account, use `Connect-AzAccount -TenantId YOUR-SUBSCRIPTION-ID` to authenticate against specific one.
+- If you have multiple Azure subscriptions avaialble for your account, use `Connect-AzAccount -TenantId YOUR-TENANT-ID` to authenticate against specific one.
 
 Once you are authenticated to Azure via PowerShell, run the following script to create the lab environment:
 
