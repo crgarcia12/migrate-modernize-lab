@@ -606,7 +606,3 @@ Thank you for investing the time and see you next time!
 - [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/azure/cloud-adoption-framework/)
 - [Microsoft Learn - Azure Migration Path](https://learn.microsoft.com/training/paths/migrate-modernize-innovate-azure/)
-
-
-parking lot
-![Architecture Overview](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/0010.png)
