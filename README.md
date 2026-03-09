@@ -13,6 +13,12 @@ This MicroHack provides hands-on experience with the entire migration lifecycle 
 - GitHub Copilot for AI-powered code modernization
 - Azure App Service for hosting modernized applications
 
+**Jump to individual challenges:**
+- [Challenge 1 - Infrastructure: Prepare a migration environment](#challenge-1---prepare-a-migration-environment)
+- [Challenge 2 - Infrastructure: Analyze data & build a business case](#challenge-2---analyze-migration-data-and-build-a-business-case)
+- [Challenge 3 - .NET app modernization](#challenge-3---modernize-a-net-application)
+- [Challenge 4 - Java app modernization](#challenge-4---modernize-a-java-application)
+
 ## Environment creation
 
 Install Azure PowerShell and authenticated to your Azure subscription:
@@ -302,6 +308,8 @@ Transform raw discovery data into actionable insights by cleaning data, grouping
 
 Modernize the Contoso University .NET Framework application to .NET 9 and deploy it to Azure App Service using GitHub Copilot's AI-powered code transformation capabilities.
 
+**This challenge can be completed using full Visual Studio (as written below) or VS Code if you don't have full Visual Studio.**  If using VS Code, skip the part about building/compiling the solution file.
+
 ### Actions
 
 **Setup and Preparation:**
@@ -317,10 +325,10 @@ Modernize the Contoso University .NET Framework application to .NET 9 and deploy
 
 ![Copy clone URL](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/clone-url.png)
 
-4. Open Visual Studio 2022
+4. Open Visual Studio 202x or VS Code.
 5. Select "Clone a repository" and paste your forked repository URL
 6. Navigate to Solution Explorer and locate the ContosoUniversity project
-7. Rebuild the project to verify it compiles successfully
+7. If using VS 202x, Rebuild the project to verify it compiles successfully
 
 ![Application running in IIS Express](https://raw.githubusercontent.com/crgarcia12/migrate-modernize-lab/refs/heads/main/lab-material/media/0030.png)
 
@@ -332,7 +340,7 @@ Modernize the Contoso University .NET Framework application to .NET 9 and deploy
 
 9. Sign in to GitHub Copilot if prompted
 10. Select Claude Sonnet 4.5 as the model
-11. Click "Upgrade to a newer .NET version"
+11. Click or instruct Copilot to "Upgrade to a newer .NET version"
 12. Allow GitHub Copilot to analyze the codebase
 13. Review the upgrade plan when presented
 14. Allow operations when prompted during the upgrade process
@@ -525,7 +533,7 @@ Throughout this MicroHack, you've gained hands-on experience with the complete m
 ### Challenge 3: .NET Application Modernization
 
 - Cloned and configured the Contoso University .NET application repository
-- Used GitHub Copilot App Modernization extension in Visual Studio
+- Used GitHub Copilot App Modernization extension in Visual Studio / VS Code
 - Performed comprehensive code assessment for cloud readiness
 - Upgraded application from legacy .NET Framework to .NET 9
 - Migrated from Windows AD to Microsoft Entra ID authentication
@@ -606,3 +614,4 @@ Thank you for investing the time and see you next time!
 - [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/azure/cloud-adoption-framework/)
 - [Microsoft Learn - Azure Migration Path](https://learn.microsoft.com/training/paths/migrate-modernize-innovate-azure/)
+- 
