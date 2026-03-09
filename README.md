@@ -389,119 +389,135 @@ Modernize the Contoso University .NET Framework application to .NET 9 and deploy
 
 ---
 
-## Challenge 4 - Modernize a Java Application
+## Challenge 4 - Modernize the Asset Manager Java Application
 
-### Goal
+## Goal
 
-Modernize the Asset Manager Java Spring Boot application for Azure deployment, migrating from AWS dependencies to Azure services using GitHub Copilot App Modernization in VS Code.
+Modernize the Asset Manager Spring Boot application for Azure by upgrading and replacing AWS S3 dependencies with Azure services through the GitHub Copilot App Modernization workflow.
 
-### Actions
+## Actions
 
-**Environment Setup:**
-1. Open Docker Desktop and ensure it's running
-2 Open Terminal and run the setup commands:
+* Fork [https://github.com/sitoader/ghcp-java-app-moderization-sample/](https://github.com/sitoader/ghcp-java-app-moderization-sample/), clone your fork in your IDE, and confirm the project builds on the `main` branch with JDK 8.
+* Use the **GitHub Copilot App Modernization** extension to run the guided assessment, upgrade, test generation, CVE scan, cloud migration, and containerization stages.
+* Follow the guide below or use the more detailed guide in the repository `README.md` file to perform all the necessary code steps to complete this challenge.
+
+## Success criteria
+
+* Docker containers start successfully and the legacy app runs locally before changes.
+* AppCAT completes with nine cloud readiness issues and four Java upgrade opportunities identified.
+* CVE scan runs clean — no critical or high-severity vulnerabilities remain.
+* The AWS S3 to Azure Blob Storage migration task executes with updated dependencies and configuration.
+* All automated validation stages pass without unresolved issues.
+* The modernized application starts locally using Azure Blob Storage with no storage errors.
+* Migration activities are traceable through dedicated plan and progress artifacts for rollback readiness.
+  
+## Pre-requirements
+
+* **IDE**: Visual Studio Code or other IDE with the following extensions:
+  - [GitHub Copilot App Modernization](https://marketplace.visualstudio.com/items?itemName=vscjava.migrate-java-to-azure)
+  - [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+  - [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+* **GitHub Copilot subscription** (Individual, Business, or Enterprise)
+* **GitHub account** with access to public repositories
+* **JDK 8** (for building the legacy app on `main`) and **JDK 21** (for the modernized app) — or use the included dev container
+* **Maven 3.x** (included via Maven Wrapper `./mvnw`)
+* **Docker Desktop** installed and running (for containerization and local testing)
+* **Azure subscription** with Contributor access to a resource group
+* **Azure CLI** installed ([Install guide](https://learn.microsoft.com/cli/azure/install-azure-cli))
+* **Azure Developer CLI (azd)** installed ([Install guide](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd))
+* **Git** configured with your GitHub credentials
+* Basic familiarity with Java / Spring Boot web applications and Maven
+
+### Dev Container (Recommended)
+
+The easiest way to get started is with the included dev container, which provides JDK 8, JDK 21, Maven, PostgreSQL, RabbitMQ, and Docker — all pre-configured. See [DEV-SETUP.md](DEV-SETUP.md) for instructions.
+
+## Step by step guide
+
+### Stage 1: Assessment & Planning
+
+1. **Open the Project**: Open the cloned repository in VS Code on the `main` branch
+2. **Open App Modernization**: Open the GitHub Copilot App Modernization panel
+3. **Start Assessment**: Select **"Start Assessment"** to begin the assessment workflow
+4. **Review the Report**: A comprehensive assessment report is generated covering:
+   - Current state analysis (Java version, Spring Boot version, dependencies)
+   - Recommended target versions
+   - Potential breaking changes and blockers
+5. **Understand the Scope**: Review the detailed findings, including framework-specific recommendations and the full list of modernization tasks
+
+### Stage 2: Java & Spring Boot Upgrade
+
+1. **Initiate the Upgrade**: In App Modernization, click **Upgrade Java Runtime & Frameworks**
+2. **Review the Plan**: The agent generates a step-by-step upgrade plan saved to `.github/java-upgrade/plan.md` — review the incremental migration path (Java 8 → 17 → 21, Spring Boot 2.7 → 3.2 → 3.3)
+3. **Approve and Execute**: Approve the plan and let the agent execute each step automatically — updating POM files, migrating `javax.*` → `jakarta.*` imports, recompiling, and committing at each milestone
+4. **Review the Summary**: Check `.github/java-upgrade/summary.md` for upgrade results, technology stack diff, and any challenges encountered
+5. **Verify Build**: Run `./mvnw clean compile` to confirm the project compiles with Java 21 and Spring Boot 3.3
+
+### Stage 3: Unit Testing
+
+1. **Generate Tests**: After the upgrade completes, GitHub Copilot suggests a **Proceed** option — click **Generate unit tests**
+2. **Review Coverage Analysis**: The agent identifies classes with no or insufficient test coverage across `web` and `worker` modules
+3. **Review Generated Tests**: JUnit 5 + Mockito tests are generated targeting controllers, services, and message processors
+4. **Run Tests**: Execute `./mvnw clean test` and confirm all tests pass
+5. **Target**: Aim for meaningful coverage on critical business logic (controllers, services, processors)
+
+### Stage 4: CVE Check & Security
+
+1. **Trigger CVE Scan**: In App Modernization, click **Scan and Resolve CVEs**
+2. **Review the Report**: Check the vulnerability report for critical/high severity issues in dependencies (Tomcat, Jackson, Spring Boot, PostgreSQL driver, etc.)
+3. **Apply Fixes**: Let Copilot upgrade dependency versions in the parent `pom.xml` (Spring Boot BOM bump, version overrides)
+4. **Confirm Resolution**: Re-scan to confirm **0 known vulnerabilities remaining** — ask Copilot to generate a vulnerability assessment report
+5. **Verify**: Run `./mvnw clean verify` to confirm everything compiles and passes
+
+### Stage 5: AWS to Azure Migration
+
+1. **Review Cloud Readiness Tasks**: In the assessment, check for AWS-specific dependencies (S3 SDK, configuration classes, storage services)
+2. **Execute Migration**: Run the migration task — the agent replaces AWS SDK with Azure SDK (`azure-storage-blob`, `azure-identity`), migrates configuration and service classes, and updates templates
+3. **Review Changes**: Confirm all AWS references are removed and Azure Blob Storage with `DefaultAzureCredential` is in place
+4. **Test Locally**: Run with the dev profile (no Azure account needed):
    ```bash
-   mkdir C:\gitrepos\lab
-   cd C:\gitrepos\lab
-   git clone https://github.com/crgarcia12/migrate-modernize-lab.git
-   cd .\migrate-modernize-lab\src\AssetManager\
-   code .
+   SPRING_PROFILES_ACTIVE=dev ./mvnw -pl web spring-boot:run
    ```
-3. Login to GitHub from VS Code
-4. Install GitHub Copilot App Modernization extension if not present
+5. **Test with Azure** (optional): Create an Azure Storage account and blob container, then configure `azure.storage.account-name` and `azure.storage.blob.container` in `application.properties` or as environment variables. Ensure you have `az login` active and **Storage Blob Data Contributor** role assigned.
 
-**Validate Application Locally:**
+### Stage 6: Containerization & Azure Deployment
 
-5. Open Terminal in VS Code (View → Terminal)
-6. Run `scripts\startapp.cmd`
-7. Wait for Docker containers (RabbitMQ, Postgres) to start
-8. Allow network permissions when prompted
-9. Verify application is accessible at http://localhost:8080
-10. Stop the application by closing console windows
+1. **Start Containerization**: In the assessment, execute the **containerization task**
+2. **Review the Plan**: The agent generates a plan covering Dockerfiles, Docker Compose, Bicep templates, and `azure.yaml`
+3. **Execute the Plan**: Approve and let the agent create all artifacts (multi-stage Dockerfiles, `docker-compose.yml`, `infra/main.bicep`, `azure.yaml`)
+4. **Test Locally with Docker Compose**:
+   ```bash
+   docker build -t assets-manager-web:latest -f web/Dockerfile .
+   docker build -t assets-manager-worker:latest -f worker/Dockerfile .
+   docker-compose up -d
+   ```
+   Verify at `http://localhost:8080` (Web UI), `http://localhost:15672` (RabbitMQ)
+5. **Deploy to Azure**:
+   ```bash
+   azd auth login
+   azd up
+   ```
+6. **Verify**: Confirm the application is running on Azure Container Apps
 
-**Perform AppCAT Assessment:**
+## Learning resources
 
-11. Open GitHub Copilot App Modernization extension in the Activity bar
-12. Ensure Claude Sonnet 4.5 is selected as the model
-13. Click "Migrate to Azure" to begin assessment
-14. Wait for AppCAT CLI installation to complete
-15. Review assessment progress in the VS Code terminal
-16. Wait for assessment results (9 cloud readiness issues, 4 Java upgrade opportunities)
+* [GitHub Copilot for VS Code](https://code.visualstudio.com/docs/copilot/overview)
+* [Azure SDK for Java](https://learn.microsoft.com/azure/developer/java/sdk/)
+* [Migrate from AWS to Azure](https://learn.microsoft.com/azure/architecture/aws-professional/)
+* [Azure Blob Storage for Java](https://learn.microsoft.com/azure/storage/blobs/storage-quickstart-blobs-java)
+* [Spring Cloud Azure](https://learn.microsoft.com/azure/developer/java/spring-framework/)
+* [AppCAT Assessment Tool](https://learn.microsoft.com/azure/developer/java/migration/migration-toolkit-intro)
 
-**Analyze Assessment Results:**
+### Quick Troubleshooting Tips
 
-17. Review the assessment summary in GitHub Copilot chat
-18. Examine issue prioritization:
-    - Mandatory (Purple) - Critical blocking issues
-    - Potential (Blue) - Performance optimizations
-    - Optional (Gray) - Future improvements
-19. Click on individual issues to see detailed recommendations
-20. Focus on the AWS S3 to Azure Blob Storage migration finding
+- **Build errors after upgrade**: Copy the full Maven error output to Copilot chat and ask for diagnosis — common issues include missing `jakarta` imports or incompatible dependency versions
+- **Test failures**: Determine if it's a test setup issue (mocking) or an actual app bug — ask Copilot to analyze the failure stack trace
+- **AWS references remaining**: Search the codebase for `aws`, `s3`, `AmazonS3` — ask Copilot to complete the migration for any remaining references
+- **Docker build failures**: Check that the Dockerfile base image matches your Java version (Eclipse Temurin 21) and that the Maven build stage copies the correct JAR
+- **`azd up` failures**: Verify `az login` is active, your subscription has Contributor access, and `azure.yaml` references the correct services
+- **Runtime issues**: Share stack traces with Copilot for resolution strategies — check `docker-compose logs -f` for local issues
 
-**Execute Guided Migration:**
 
-21. Expand the "Migrate from AWS S3 to Azure Blob Storage" task
-22. Read the explanation of why this migration is important
-23. Click the "Run Task" button to start the migration
-24. Review the generated migration plan in the chat window and `plan.md` file
-25. Type "Continue" in the chat to begin code refactoring
-
-**Monitor Migration Progress:**
-
-26. Watch the GitHub Copilot chat for real-time status updates
-27. Check the `progress.md` file for detailed change logs
-28. Review file modifications as they occur:
-    - `pom.xml` and `build.gradle` updates for Azure SDK dependencies
-    - `application.properties` configuration changes
-    - Spring Cloud Azure version properties
-29. Allow any prompted operations during the migration
-
-**Validate Migration:**
-
-30. Wait for automated validation to complete:
-    - CVE scanning for security vulnerabilities
-    - Build validation
-    - Consistency checks
-    - Test execution
-31. Review validation results in the chat window
-32. Allow automated fixes if validation issues are detected
-33. Confirm all validation stages pass successfully
-
-**Test Modernized Application:**
-
-34. Open Terminal in VS Code
-35. Run `scripts\startapp.cmd` again
-36. Verify the application starts with Azure Blob Storage integration
-37. Test application functionality at http://localhost:8080
-38. Confirm no errors related to storage operations
-
-**Optional: Continue Modernization:**
-
-39. Review other migration tasks in the assessment report
-40. Execute additional migrations as time permits
-41. Track progress through the `plan.md` and `progress.md` files
-
-### Success Criteria
-
-- ✅ Docker Desktop is running and containers are functional
-- ✅ Asset Manager application cloned and runs locally
-- ✅ AppCAT assessment completed successfully
-- ✅ Assessment identifies 9 cloud readiness issues and 4 Java upgrade opportunities
-- ✅ AWS S3 to Azure Blob Storage migration executed via guided task
-- ✅ Maven/Gradle dependencies updated with Azure SDK
-- ✅ Application configuration migrated to Azure Blob Storage
-- ✅ All validation stages pass (CVE, build, consistency, tests)
-- ✅ Modernized application runs successfully locally
-- ✅ Migration changes tracked in dedicated branch for rollback capability
-
-### Learning Resources
-
-- [GitHub Copilot for VS Code](https://code.visualstudio.com/docs/copilot/overview)
-- [Azure SDK for Java](https://learn.microsoft.com/azure/developer/java/sdk/)
-- [Migrate from AWS to Azure](https://learn.microsoft.com/azure/architecture/aws-professional/)
-- [Azure Blob Storage for Java](https://learn.microsoft.com/azure/storage/blobs/storage-quickstart-blobs-java)
-- [Spring Cloud Azure](https://learn.microsoft.com/azure/developer/java/spring-framework/)
-- [AppCAT Assessment Tool](https://learn.microsoft.com/azure/developer/java/migration/migration-toolkit-intro)
 
 ---
 
