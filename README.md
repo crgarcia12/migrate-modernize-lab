@@ -17,7 +17,7 @@ This MicroHack provides hands-on experience with the entire migration lifecycle 
 - [Challenge 1 - Infrastructure: Prepare a migration environment](#challenge-1---prepare-a-migration-environment)
 - [Challenge 2 - Infrastructure: Analyze data & build a business case](#challenge-2---analyze-migration-data-and-build-a-business-case)
 - [Challenge 3 - .NET app modernization](#challenge-3---modernize-a-net-application)
-- [Challenge 4 - Java app modernization](#challenge-4---modernize-a-java-application)
+- [Challenge 4 - Java app modernization](#challenge-4---modernize-the-asset-manager-java-application)
 
 ## Environment creation
 
