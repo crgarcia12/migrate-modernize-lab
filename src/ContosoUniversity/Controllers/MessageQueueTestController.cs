@@ -1,19 +1,16 @@
 using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Infrastructure;
 using ContosoUniversity.Services;
 using ContosoUniversity.Models;
+using ContosoUniversity.Data;
 
 namespace ContosoUniversity.Controllers
 {
-    public class MessageQueueTestController : Controller
+    public class MessageQueueTestController : BaseController
     {
-        private readonly NotificationService _notificationService;
-
-        public MessageQueueTestController()
-        {
-            _notificationService = new NotificationService();
-        }
+        public MessageQueueTestController(SchoolContext context, NotificationService notificationSvc)
+            : base(context, notificationSvc) { }
 
         public ActionResult Index()
         {
@@ -26,12 +23,12 @@ namespace ContosoUniversity.Controllers
         {
             try
             {
-                _notificationService.SendNotification(
+                notificationService.SendNotification(
                     "Test", 
                     Guid.NewGuid().ToString(), 
                     "Test Entity", 
                     EntityOperation.CREATE, 
-                    User.Identity.Name ?? "TestUser"
+                    User?.Identity?.Name ?? "TestUser"
                 );
 
                 ViewBag.Message = "Test notification sent successfully!";
@@ -56,7 +53,7 @@ namespace ContosoUniversity.Controllers
                 
                 // Try to receive up to 10 notifications
                 int count = 0;
-                while ((notification = _notificationService.ReceiveNotification()) != null && count < 10)
+                while ((notification = notificationService.ReceiveNotification()) != null && count < 10)
                 {
                     notifications.Add(notification);
                     count++;
@@ -142,7 +139,7 @@ namespace ContosoUniversity.Controllers
         {
             if (disposing)
             {
-                _notificationService?.Dispose();
+                notificationService?.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models.SchoolViewModels;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Controllers
 {
     public class HomeController : BaseController
     {
+        public HomeController(SchoolContext context, NotificationService notificationSvc)
+            : base(context, notificationSvc) { }
         public ActionResult Index()
         {
             return View();
@@ -38,7 +41,7 @@ namespace ContosoUniversity.Controllers
             return View();
         }
 
-        public ActionResult Unauthorized()
+        public ActionResult AccessDenied()
         {
             ViewBag.Message = "You don't have permission to access this resource.";
             return View();

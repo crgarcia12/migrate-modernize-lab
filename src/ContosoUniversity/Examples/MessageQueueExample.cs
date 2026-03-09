@@ -32,9 +32,8 @@ namespace ContosoUniversity.Examples
             MessageQueue.Delete(queuePath);
         }
 
-        public void NotificationServiceExample()
+        public void NotificationServiceExample(NotificationService notificationService)
         {
-            var notificationService = new NotificationService();
 
             // Send some notifications
             notificationService.SendNotification("Student", "123", "John Doe", EntityOperation.CREATE, "admin");

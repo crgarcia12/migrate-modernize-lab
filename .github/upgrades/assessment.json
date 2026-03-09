@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "components": {
+      "code": false,
+      "binaries": false
+    },
+    "targetId": "net9.0",
+    "targetDisplayName": ".NETCoreApp,Version=v9.0"
+  },
+  "analysisStartTime": "2026-03-09T11:26:42.6106407Z",
+  "analysisEndTime": "2026-03-09T11:26:42.6117802Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 0,
+      "issues": 0,
+      "incidents": 0,
+      "effort": 0
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 0,
+        "Optional": 0,
+        "Potential": 0,
+        "Information": 0
+      },
+      "category": {}
+    }
+  },
+  "projects": [],
+  "rules": {}
+}
