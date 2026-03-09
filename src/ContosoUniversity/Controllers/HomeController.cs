@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models.SchoolViewModels;
@@ -7,6 +8,7 @@ using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : BaseController
     {
         public HomeController(SchoolContext context, NotificationService notificationSvc)

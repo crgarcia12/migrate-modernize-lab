@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Services;
 using ContosoUniversity.Models;
@@ -26,7 +27,9 @@ namespace ContosoUniversity.Controllers
         {
             try
             {
-                var userName = "System"; // No authentication, use System as default user
+                var userName = User?.Identity?.IsAuthenticated == true
+                    ? (User.FindFirst("name")?.Value ?? User.Identity.Name ?? "Unknown")
+                    : "System";
                 notificationService.SendNotification(entityType, entityId, entityDisplayName, operation, userName);
             }
             catch (Exception ex)

@@ -16,6 +16,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.2" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.8.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

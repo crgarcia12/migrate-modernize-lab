@@ -1,0 +1,49 @@
+name: Deploy ContosoUniversity to Azure App Service
+
+on:
+  push:
+    branches:
+      - upgrade/dotnet9
+      - main
+    paths:
+      - 'src/ContosoUniversity/**'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  AZURE_WEBAPP_NAME: 'contosouniversity-app'    # Set this to your Azure App Service name
+  AZURE_WEBAPP_PACKAGE_PATH: './publish'
+  PROJECT_PATH: 'src/ContosoUniversity/ContosoUniversity.csproj'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.webapp-url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} --no-build
+
+      - name: Deploy to Azure App Service
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}

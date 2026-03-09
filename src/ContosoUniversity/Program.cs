@@ -4,15 +4,32 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using ContosoUniversity.Data;
 using ContosoUniversity.Infrastructure;
 using ContosoUniversity.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Microsoft Entra ID (Azure AD) authentication
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration, "AzureAd");
+
 // Add services to the container.
-builder.Services.AddControllersWithViews()
-    .AddNewtonsoftJson();
+builder.Services.AddControllersWithViews(options =>
+    {
+        // Require authenticated users by default for all controllers
+        var policy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
+    })
+    .AddNewtonsoftJson()
+    .AddMicrosoftIdentityUI();
+
+// Register Razor Pages (required by Microsoft.Identity.Web.UI)
+builder.Services.AddRazorPages();
 
 // Register EF Core DbContext
 builder.Services.AddDbContext<SchoolContext>(options =>
@@ -41,8 +58,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
